@@ -2,6 +2,8 @@
 
 An easy to use package which helps to do hand tracking, face detection, etc. with use of opencv module.
 
+**PyPi package link : https://pypi.org/project/cvlearn/**
+
 # Installation
    - Use Python 3.x
    - Open cmd/terminal and type:
