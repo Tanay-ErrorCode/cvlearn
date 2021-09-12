@@ -33,6 +33,10 @@ while True:
     cv2.waitKey(1)
 
 ```
+### **Result:**
+![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/handTracking.jpg)
+
+
 
 **Face Detection:**
 ```bash
@@ -48,6 +52,11 @@ while True:
     cv2.imshow("Result", img)
     cv2.waitKey(1)
 ```
+### **Result:**
+![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/faceDetection.jpg)
+**SideView:**
+![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/faceDetection2.jpg)
+
 **Drawing face mesh:**
 ```bash
 from cvlearn import FaceMesh as fms
@@ -63,6 +72,8 @@ while True:
     cv2.waitKey(1)
 
 ```
+### **Result:**
+![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/faceMesh.jpg)
 **Counting fingers:**
 ```bash
 from cvlearn import FingerCounter as fc
@@ -92,5 +103,8 @@ while True:
 cv2.destroyAllWindows()
 
 ```
+### **Result:**
+![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/fingerCounter.jpg)
+
 
 
