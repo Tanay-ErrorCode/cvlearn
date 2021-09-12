@@ -78,7 +78,7 @@ while True:
 ![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/faceMesh.jpg)
 #
 #
-**Counting fingers:**
+**Finger Counting:**
 ```bash
 from cvlearn import FingerCounter as fc
 import cvlearn.HandTrackingModule as handTracker
