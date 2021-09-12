@@ -56,6 +56,8 @@ while True:
 ```
 ### **Result:**
 ![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/faceDetection.jpg)
+#
+#
 **SideView:**
 ![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/faceDetection2.jpg)
 
