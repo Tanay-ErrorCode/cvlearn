@@ -2,8 +2,6 @@
 
 An easy to use package which helps to do hand tracking, face detection, etc. with use of opencv module.
 
-**PyPi package link : https://pypi.org/project/cvlearn/**
-
 # Installation
    - Use Python 3.x
    - Open cmd/terminal and type:
@@ -67,10 +65,10 @@ from cvlearn import FaceMesh as fms
 
 import cv2
 cap = cv2.VideoCapture(0)
-detector = fms.FaceMeshDector()
+detector = fms.FaceMeshDetector()
 while True:
     ret, img = cap.read()
-    img = detector.findFaceMesh(img)
+    img, face = detector.findFaceMesh(img)
 
     cv2.imshow("Result", img)
     cv2.waitKey(1)
@@ -78,9 +76,11 @@ while True:
 ```
 ### **Result:**
 ![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/faceMesh.jpg)
+
 #
 #
-**Finger Counting:**
+
+**Finger Counting**
 ```bash
 from cvlearn import FingerCounter as fc
 import cvlearn.HandTrackingModule as handTracker

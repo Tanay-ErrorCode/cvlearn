@@ -21,7 +21,7 @@ class FaceMeshDetector:
         """
         :param img: Image to find faces in.
         :param draw: Flag to draw the output on the image.
-        :return: Image with or without drawings
+        :return: Image with or without drawings and a list with face id.
         """
         self.imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         self.results = self.faceMesh.process(self.imgRGB)
