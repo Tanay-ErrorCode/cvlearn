@@ -40,7 +40,7 @@ while True:
 
 **Face Detection:**
 ```bash
-from cvlearn import FaceDetector as faceDetector
+from cvlearn import FaceDetection as faceDetector
 
 import cv2
 cap = cv2.VideoCapture(0)
