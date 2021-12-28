@@ -5,7 +5,7 @@ here = pathlib.Path(__file__).parent
 
 long_description = (here / "README.md").read_text()
 
-VERSION = '0.0.6'
+VERSION = '0.0.9'
 DESCRIPTION = 'Coumputer Vision helping Library'
 print(long_description)
 setup(

@@ -4,16 +4,17 @@ import mediapipe as mp
 
 class FaceMeshDetector:
 
-    def __init__(self, staticMode=False, maxFaces=2, minDetectionCon=0.5, minTrackCon=0.5):
+    def __init__(self, staticMode=False, maxFaces=2, minDetectionCon=0.5, minTrackCon=0.5, RefineLandmarks=False):
 
         self.staticMode = staticMode
         self.maxFaces = maxFaces
         self.minDetectionCon = minDetectionCon
         self.minTrackCon = minTrackCon
-
+        self.refine_landmarks = RefineLandmarks
         self.mpDraw = mp.solutions.drawing_utils
         self.mpFaceMesh = mp.solutions.face_mesh
         self.faceMesh = self.mpFaceMesh.FaceMesh(self.staticMode, self.maxFaces,
+                                                 self.refine_landmarks,
                                                  self.minDetectionCon, self.minTrackCon)
         self.drawSpec = self.mpDraw.DrawingSpec(thickness=1, circle_radius=2)
 
