@@ -112,5 +112,28 @@ cv2.destroyAllWindows()
 ### **Result:**
 ![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/fingerCounter.jpg)
 
+#
+#
+**Two Hands Finger Counting**
+```bash
+from cvlearn import TwoHandsFingerCounter as fc
+import cv2
+
+cap = cv2.VideoCapture(0)
+
+counter = fc.FingerCounter()
+while True:
+    ret, frame = cap.read()
 
 
+    frame1 = counter.drawCountedFingers(frame)
+
+    cv2.imshow("res", frame)
+    key = cv2.waitKey(1)
+    if key == 27:
+        break
+cv2.destroyAllWindows()
+
+```
+### **Result:**
+![App Screenshot](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/MultipleHandsFingerCounter.jpg)
