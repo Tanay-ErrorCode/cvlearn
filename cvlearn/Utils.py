@@ -28,3 +28,25 @@ def findDistance(p1, p2, img, draw=False):
 
     length = math.hypot(x2 - x1, y2 - y1)
     return length, [cx, cy]
+
+
+def findAngle(p1, p2, p3, img=None, color=(255, 0, 255), scale=5, draw=False):
+    x1, y1 = p1
+    x2, y2 = p2
+    x3, y3 = p3
+    angle = math.degrees(math.atan2(y3 - y2, x3 - x2) -
+                            math.atan2(y1 - y2, x1 - x2))
+    if angle < 0:
+        angle += 360
+    if img is not None:
+        if draw:
+            
+            cv2.line(img, (x1, y1), (x2, y2), color, 2)
+            cv2.line(img, (x3, y3), (x2, y2), color, 2)
+            cv2.circle(img, (x1, y1), scale, color, cv2.FILLED)
+            cv2.circle(img, (x2, y2), scale, color, cv2.FILLED)
+            cv2.circle(img, (x3, y3), scale, color, cv2.FILLED)
+            cv2.putText(img, str(int(angle)), (x2 - 40, y2 + 40),
+                        cv2.FONT_HERSHEY_PLAIN, 2, color, 2)
+        
+    return angle
