@@ -35,7 +35,7 @@ class FaceMeshDetector:
                 face = []
                 for id, lm in enumerate(faceLms.landmark):
                     ih, iw, ic = img.shape
-                    x, y = int(lm.x * iw), int(lm.y * ih)
-                    face.append([x, y])
+                    x, y, z = int(lm.x * iw), int(lm.y * ih), lm.z  # Include z-coordinate
+                    face.append([x, y, z])  # Append x, y, z
                 faces.append(face)
         return img, faces

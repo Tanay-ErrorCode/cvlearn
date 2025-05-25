@@ -1,11 +1,11 @@
 import cv2
 import mediapipe as mp
 import math
-
+from ursina import *
 
 class handDetector:
 
-    def __init__(self, mode=False, maxHands=2, detectionCon=0.5, minTrackCon=0.5):
+    def __init__(self, mode=False, maxHands=1, detectionCon=0.5, minTrackCon=0.5):
         """
         :param mode: In static mode, detection is done on each image: slower
         :param maxHands: Maximum number of hands to detect
@@ -53,16 +53,18 @@ class handDetector:
         """
         xList = []
         yList = []
+        zList = []
         bbox = []
         self.lmList = []
         if self.results.multi_hand_landmarks:
             myHand = self.results.multi_hand_landmarks[handNo]
             for id, lm in enumerate(myHand.landmark):
                 h, w, c = img.shape
-                px, py = int(lm.x * w), int(lm.y * h)
+                px, py, pz = int(lm.x * w), int(lm.y * h), lm.z
                 xList.append(px)
                 yList.append(py)
-                self.lmList.append([px, py])
+                zList.append(pz)
+                self.lmList.append([px, py, pz])
 
                 if draw:
                     cv2.circle(img, (px, py), 5, (0, 255, 0), cv2.FILLED)
