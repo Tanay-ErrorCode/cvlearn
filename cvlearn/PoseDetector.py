@@ -41,24 +41,37 @@ class PoseDetector:
             self.mpDraw.draw_landmarks(img, self.results.pose_landmarks, mp.solutions.pose.POSE_CONNECTIONS)
         return img
 
-    def findLandmarks(self, img, draw=True):
+    def findLandmarks(self, img, draw=True, returnZ=False):
         """
-        The function `findLandmarks` takes an image and returns a list of landmark coordinates if pose
-        landmarks are detected.
+        The function `findLandmarks` extracts landmarks from a given image and optionally draws them on
+        the image while also providing the option to return the relative depth information.
         
-        :param img: The `img` parameter in the `findLandmarks` function is expected to be an image
-        (e.g., a frame from a video feed or an image file) on which the landmarks are to be detected
-        :param draw: The `draw` parameter in the `findLandmarks` method is a boolean parameter that
-        specifies whether to draw the landmarks on the image or not. By default, it is set to `True`,
-        which means that the landmarks will be drawn on the image if no value is provided for this
-        parameter when, defaults to True (optional)
-        :return: The function `findLandmarks` returns a list of landmarks (lmList) that contains the
-        coordinates of detected landmarks in the input image.
+        :param img: The `img` parameter in the `findLandmarks` function is the image on which you want
+        to detect and draw landmarks. It is the input image where the pose landmarks will be identified
+        and potentially drawn on if the `draw` parameter is set to `True`
+        :param draw: The `draw` parameter in the `findLandmarks` function is a boolean parameter that
+        determines whether the landmarks should be drawn on the image or not. If `draw` is set to
+        `True`, the landmarks will be visualized on the image using the `mpDraw.draw_landmarks` method,
+        defaults to True (optional)
+        :param returnZ: The `returnZ` parameter in the `findLandmarks` function determines whether the
+        function should include the relative depth information (z-coordinate) of the landmarks in the
+        output list `lmList`, defaults to False (optional)
+        :return: The function `findLandmarks` returns a list of landmarks detected in the input image.
+        The landmarks are represented as either [cx, cy] (if `returnZ` is False) or [cx, cy, cz] (if
+        `returnZ` is True), where cx and cy are the coordinates of the landmark in the image and cz is
+        the relative depth (usually negative if in front
         """
+
         lmList = []
         if self.results.pose_landmarks:
             h, w, _ = img.shape
             for lm in self.results.pose_landmarks.landmark:
                 cx, cy = int(lm.x * w), int(lm.y * h)
-                lmList.append([cx, cy])
+                if returnZ:
+                    cz = lm.z
+                    lmList.append([cx, cy, cz])
+                else:
+                    lmList.append([cx, cy])
+            if draw:
+                self.mpDraw.draw_landmarks(img, self.results.pose_landmarks, mp.solutions.pose.POSE_CONNECTIONS)
         return lmList
