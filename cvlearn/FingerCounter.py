@@ -5,7 +5,6 @@ cap = cv2.VideoCapture(0)
 cap.set(3, 640)
 cap.set(4, 480)
 
-# print(len(overlayList))
 
 detector = htm.handDetector(detectionCon=0.75)
 

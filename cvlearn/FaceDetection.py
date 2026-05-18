@@ -11,11 +11,6 @@ import time
 import urllib.request
 from pathlib import Path
 
-try:
-    import cvzone  # type: ignore[import-not-found]
-except Exception:
-    cvzone = None
-
 
 SHORT_RANGE_MODEL_URL = (
     "https://storage.googleapis.com/mediapipe-models/"
@@ -135,46 +130,31 @@ class FaceDetector:
     @staticmethod
     def _draw_face_box(img, bbox, confidence):
         x, y, w, h = bbox
-        if cvzone is not None:
-            cvzone.cornerRect(img, bbox, rt=0, t=2, colorC=(255, 0, 255), colorR=(255, 0, 255))
-            cvzone.putTextRect(img, f'{int(confidence * 100)}%', (x, y - 20), scale=1.5, thickness=2,
-                               colorT=(255, 255, 255), colorR=(255, 0, 255))
-            return
-
         cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 255), 2)
         cv2.putText(img, f'{int(confidence * 100)}%', (x, y - 10),
                     cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
 
 
 def main():
-    # Initialize the webcam
     cap = cv2.VideoCapture(0)
 
-    # Initialize the FaceDetector object
     detector = FaceDetector(minDetectionCon=0.5, modelSelection=0)
 
-    # Run the loop to continually get frames from the webcam
     while True:
         success, img = cap.read()
         if not success:
             break
 
-        # Detect faces in the image
         img, bboxs = detector.findFaces(img, draw=False)
 
-        # Draw data
         for bbox in bboxs:
             center = bbox["center"]
             x, y, w, h = bbox["bbox"]
             score = int(bbox["score"][0] * 100)
 
             cv2.circle(img, center, 5, (255, 0, 255), cv2.FILLED)
-            if cvzone is not None:
-                cvzone.putTextRect(img, f'{score}%', (x, y - 10))
-                cvzone.cornerRect(img, (x, y, w, h))
-            else:
-                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 255), 2)
-                cv2.putText(img, f'{score}%', (x, y - 10), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 255), 2)
+            cv2.putText(img, f'{score}%', (x, y - 10), cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 255), 2)
 
         cv2.imshow("Image", img)
         cv2.waitKey(1)
