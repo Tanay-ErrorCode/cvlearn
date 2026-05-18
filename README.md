@@ -35,12 +35,6 @@ pip install cvlearn
 pip install mediapipe opencv-python numpy
 ```
 
-### Troubleshooting
-If you encounter any errors during installation, see [FIX_MEDIAPIPE_ERROR.md](FIX_MEDIAPIPE_ERROR.md) or run:
-```bash
-python test_installation.py
-```
-
 
 
 ### Hand Tracking
