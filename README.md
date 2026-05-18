@@ -1,30 +1,47 @@
-# cvlearn
 
-An easy-to-use package that helps with hand tracking, face detection, and more using OpenCV.
+# Project Title
+
+A brief description of what this project does and who it's for
+
+# CVLearn
+
+An easy-to-use package that helps with hand tracking, face detection, and more using OpenCV and Mediapipe.
+
+---
+
+## Features
+
+### Core Features
+- **Hand Tracking** - Real-time hand pose detection and tracking
+- **Face Detection** - Multi-face detection and bounding boxes
+- **Face Mesh** - Detailed facial landmarks
+- **Finger Counting** - Single and dual-hand finger detection
+- **Pose Detection** - Full body pose estimation
+- **Gesture Recognition** - Gesture recognition with combo detection and velocity-based gestures
 
 ---
 
 ## Installation
 
-* Use **Python 3.x**
+* Use **Python 3.6+**
 * Open your terminal or command prompt and run:
 
 ```bash
 pip install cvlearn
 ```
 
----
+### Install Dependencies (if needed)
+```bash
+pip install mediapipe opencv-python numpy
+```
 
-## Dependencies
+### Troubleshooting
+If you encounter any errors during installation, see [FIX_MEDIAPIPE_ERROR.md](FIX_MEDIAPIPE_ERROR.md) or run:
+```bash
+python test_installation.py
+```
 
-* python 3.x
-* opencv-python
-* numpy
-* mediapipe
 
----
-
-## Examples
 
 ### Hand Tracking
 
@@ -167,23 +184,30 @@ cv2.destroyAllWindows()
 import cv2
 import cvlearn
 from cvlearn import PoseDetector, Utils
-
-cap = cv2.VideoCapture(0)
-detector = PoseDetector.PoseDetector(detectionCon=0.5, trackCon=0.5)
-
-while True:
-    success, img = cap.read()
-    img = detector.findPose(img)
-    lmList = detector.findLandmarks(img)
-
-    cv2.imshow("Image", img)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-cap.release()
-cv2.destroyAllWindows()
 ```
 
-**Result:**
+---
 
-![Pose Detection](https://raw.githubusercontent.com/Tanay-ErrorCode/cvlearn/main/images/poseDetection.jpg)
+### Gesture Recognition
+
+```python
+import cv2
+from cvlearn import GestureRecognizer
+
+cap = cv2.VideoCapture(0)
+detector = GestureRecognizer(maxHands=2)
+
+while True:
+    ret, frame = cap.read()
+    frame = detector.findHands(frame)
+
+    gesture, confidence = detector.recognizeGesture(frame)
+    frame = detector.drawGestureInfo(frame, gesture, confidence)
+
+    cv2.imshow("Result", frame)
+    key = cv2.waitKey(1)
+    if key == 27:
+        break
+
+cv2.destroyAllWindows()
+```

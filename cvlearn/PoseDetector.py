@@ -1,77 +1,108 @@
+"""
+Pose Detector Module
+By: CVLearn
+"""
+
 import cv2
 import math
+import tempfile
+import urllib.request
+from pathlib import Path
+
 import mediapipe as mp
 
 
-class PoseDetector:
+POSE_MODEL_URL = (
+    "https://storage.googleapis.com/mediapipe-models/"
+    "pose_landmarker/pose_landmarker/full/latest/pose_landmarker.task"
+)
 
+POSE_CONNECTIONS = [
+    (11, 12), (11, 13), (13, 15), (12, 14), (14, 16),
+    (11, 23), (12, 24), (23, 24), (23, 25), (25, 27),
+    (24, 26), (26, 28),
+]
+
+
+class PoseDetector:
     def __init__(self, staticMode=False, modelComplexity=1, smoothLandmarks=True,
                  enableSegmentation=False, smoothSegmentation=True,
-                 detectionCon=0.5, trackCon=0.5):
+                 detectionCon=0.5, trackCon=0.5, modelPath=None):
+        self.staticMode = staticMode
+        self.modelComplexity = modelComplexity
+        self.smoothLandmarks = smoothLandmarks
+        self.enableSegmentation = enableSegmentation
+        self.smoothSegmentation = smoothSegmentation
+        self.detectionCon = detectionCon
+        self.trackCon = trackCon
 
-        self.pose = mp.solutions.pose.Pose(
-            static_image_mode=staticMode,
-            model_complexity=modelComplexity,
-            smooth_landmarks=smoothLandmarks,
-            enable_segmentation=enableSegmentation,
-            smooth_segmentation=smoothSegmentation,
-            min_detection_confidence=detectionCon,
-            min_tracking_confidence=trackCon)
+        self.BaseOptions = mp.tasks.BaseOptions
+        self.PoseLandmarker = mp.tasks.vision.PoseLandmarker
+        self.PoseLandmarkerOptions = mp.tasks.vision.PoseLandmarkerOptions
+        self.RunningMode = mp.tasks.vision.RunningMode
 
-        self.mpDraw = mp.solutions.drawing_utils
-        self.drawSpec = self.mpDraw.DrawingSpec(thickness=2, circle_radius=3)
+        self.modelPath = self._resolve_model_path(modelPath)
+        self.pose = self.PoseLandmarker.create_from_options(
+            self.PoseLandmarkerOptions(
+                base_options=self.BaseOptions(model_asset_path=self.modelPath),
+                running_mode=self.RunningMode.IMAGE if self.staticMode else self.RunningMode.VIDEO,
+                num_poses=1,
+                min_pose_detection_confidence=self.detectionCon,
+                min_pose_presence_confidence=self.detectionCon,
+                min_tracking_confidence=self.trackCon,
+                output_segmentation_masks=self.enableSegmentation,
+            )
+        )
+        self._timestamp_ms = 0
+        self.results = None
+
+    @staticmethod
+    def _resolve_model_path(modelPath):
+        if modelPath:
+            return modelPath
+
+        cache_dir = Path(tempfile.gettempdir()) / "cvlearn_models"
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        model_file = cache_dir / "pose_landmarker.task"
+        if not model_file.exists():
+            urllib.request.urlretrieve(POSE_MODEL_URL, model_file)
+        return str(model_file)
 
     def findPose(self, img, draw=True):
-        """
-        This Python function finds and draws pose landmarks on an image if they are detected.
-        
-        :param img: The `img` parameter is the input image that you want to process and detect poses on.
-        It is expected to be in BGR format
-        :param draw: The `draw` parameter in the `findPose` method is a boolean parameter that
-        determines whether the pose landmarks should be drawn on the image or not. If `draw` is set to
-        `True`, the method will draw the pose landmarks on the image using the `mpDraw.draw_landmarks`,
-        defaults to True (optional)
-        :return: The function `findPose` returns the image with the pose landmarks drawn on it if `draw`
-        is set to `True`. If `draw` is set to `False`, it returns the original image without any
-        modifications.
-        """
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        self.results = self.pose.process(imgRGB)
-        if self.results.pose_landmarks and draw:
-            self.mpDraw.draw_landmarks(img, self.results.pose_landmarks, mp.solutions.pose.POSE_CONNECTIONS)
+        mpImage = mp.Image(image_format=mp.ImageFormat.SRGB, data=imgRGB)
+        if self.staticMode:
+            self.results = self.pose.detect(mpImage)
+        else:
+            self._timestamp_ms += 1
+            self.results = self.pose.detect_for_video(mpImage, self._timestamp_ms)
+
+        if getattr(self.results, "pose_landmarks", None) and draw:
+            self._draw_pose(img, self.results.pose_landmarks[0])
         return img
 
     def findLandmarks(self, img, draw=True, returnZ=False):
-        """
-        The function `findLandmarks` extracts landmarks from a given image and optionally draws them on
-        the image while also providing the option to return the relative depth information.
-        
-        :param img: The `img` parameter in the `findLandmarks` function is the image on which you want
-        to detect and draw landmarks. It is the input image where the pose landmarks will be identified
-        and potentially drawn on if the `draw` parameter is set to `True`
-        :param draw: The `draw` parameter in the `findLandmarks` function is a boolean parameter that
-        determines whether the landmarks should be drawn on the image or not. If `draw` is set to
-        `True`, the landmarks will be visualized on the image using the `mpDraw.draw_landmarks` method,
-        defaults to True (optional)
-        :param returnZ: The `returnZ` parameter in the `findLandmarks` function determines whether the
-        function should include the relative depth information (z-coordinate) of the landmarks in the
-        output list `lmList`, defaults to False (optional)
-        :return: The function `findLandmarks` returns a list of landmarks detected in the input image.
-        The landmarks are represented as either [cx, cy] (if `returnZ` is False) or [cx, cy, cz] (if
-        `returnZ` is True), where cx and cy are the coordinates of the landmark in the image and cz is
-        the relative depth (usually negative if in front
-        """
-
         lmList = []
-        if self.results.pose_landmarks:
+        if getattr(self.results, "pose_landmarks", None):
             h, w, _ = img.shape
-            for lm in self.results.pose_landmarks.landmark:
+            for lm in self.results.pose_landmarks[0]:
                 cx, cy = int(lm.x * w), int(lm.y * h)
                 if returnZ:
-                    cz = lm.z
-                    lmList.append([cx, cy, cz])
+                    lmList.append([cx, cy, lm.z])
                 else:
                     lmList.append([cx, cy])
             if draw:
-                self.mpDraw.draw_landmarks(img, self.results.pose_landmarks, mp.solutions.pose.POSE_CONNECTIONS)
+                self._draw_pose(img, self.results.pose_landmarks[0])
         return lmList
+
+    def _draw_pose(self, img, landmarks):
+        h, w, _ = img.shape
+        points = [(int(lm.x * w), int(lm.y * h)) for lm in landmarks]
+        for start, end in POSE_CONNECTIONS:
+            if start < len(points) and end < len(points):
+                cv2.line(img, points[start], points[end], (0, 255, 0), 2)
+        for point in points:
+            cv2.circle(img, point, 3, (0, 255, 0), cv2.FILLED)
+
+
+PoseDetector = PoseDetector

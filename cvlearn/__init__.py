@@ -1,3 +1,9 @@
+from . import HandTrackingModule
+from . import FingerCounter
+from . import FaceDetection
+from . import FaceMesh
+from . import PoseDetector
+from .GestureRecognizer import GestureRecognizer
 import subprocess
 import sys
 
@@ -8,9 +14,11 @@ try:
     install('msvc-runtime')
 except Exception as e:
     pass
-
-from cvlearn import HandTrackingModule
-from cvlearn import FingerCounter
-from cvlearn import FaceDetection
-from cvlearn import FaceMesh
-from cvlearn import PoseDetector
+__all__ = [
+    "HandTrackingModule",
+    "FingerCounter",
+    "FaceDetection",
+    "FaceMesh",
+    "PoseDetector",
+    "GestureRecognizer",
+]
